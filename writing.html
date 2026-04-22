@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万语集 - 作文翻译</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.08);
+            --navbar-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --btn-bg: rgba(255, 255, 255, 0.1);
+            --btn-border: rgba(255, 255, 255, 0.2);
+            --btn-hover-bg: rgba(255, 255, 255, 0.2);
+            --glow-color: rgba(30, 150, 140, 0.12);
+            --glow-color-2: rgba(30, 150, 140, 0.08);
+            --cursor-glow: rgba(30, 150, 140, 1);
+        }
+
+        body.light-mode {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d9e2ec 100%);
+            --text-color: #1a1a2e;
+            --text-secondary: rgba(26, 26, 46, 0.7);
+            --text-tertiary: rgba(26, 26, 46, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.8);
+            --navbar-border: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-border: rgba(0, 0, 0, 0.1);
+            --btn-hover-bg: rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(30, 150, 140, 0.1);
+            --glow-color-2: rgba(30, 150, 140, 0.06);
+            --cursor-glow: rgba(30, 150, 140, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.3s ease;
+        }
+
+        .glow-layer-1 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle 600px at var(--x, 50%) var(--y, 50%), var(--glow-color), transparent 50%);
+        }
+
+        .glow-layer-2 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(circle 300px at var(--x, 50%) var(--y, 50%), var(--glow-color-2), transparent 40%);
+        }
+
+        .cursor-glow {
+            position: fixed;
+            width: 20px; height: 20px;
+            background: radial-gradient(circle, var(--cursor-glow), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body:hover .cursor-glow { opacity: 1; }
+
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            background: var(--navbar-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--navbar-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .navbar-center { display: flex; align-items: center; gap: 40px; }
+
+        .nav-link {
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-link:hover { color: #40e0d0; }
+        .nav-link.active { color: #40e0d0; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #40e0d0, #2eb8a8);
+        }
+
+        .navbar-right { display: flex; align-items: center; gap: 20px; }
+
+        .notification-btn {
+            width: 40px; height: 40px;
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover { background: var(--btn-hover-bg); }
+        .notification-btn svg { width: 20px; height: 20px; fill: var(--text-secondary); }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover { background: var(--btn-bg); }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-name { font-size: 15px; color: var(--text-color); }
+
+        .theme-btn {
+            padding: 10px 16px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn:hover { background: var(--btn-hover-bg); }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding-top: 90px;
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .page-header { margin-bottom: 30px; }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .page-title span { color: #40e0d0; }
+
+        .coming-soon-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .coming-soon-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+
+        .coming-soon-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .coming-soon-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+
+        .coming-soon-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--btn-bg);
+            border-radius: 25px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 0 20px; }
+            .navbar-center { display: none; }
+            .container { padding: 0 20px; }
+            .coming-soon-features { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-layer-1"></div>
+    <div class="glow-layer-2"></div>
+    <div class="cursor-glow"></div>
+
+    <nav class="navbar">
+        <div class="navbar-logo" onclick="location.href='index.html'">万语集</div>
+        <div class="navbar-center">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="learning.html" class="nav-link">语言学习</a>
+            <a href="vocabulary.html" class="nav-link">词库</a>
+        </div>
+        <div class="navbar-right">
+            <button class="notification-btn">
+                <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <span class="user-name">用户昵称</span>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <button class="theme-btn">换肤</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title"><span>✍️</span> 作文翻译，AI 批改</h1>
+            </div>
+
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon">✍️</div>
+                <h2 class="coming-soon-title">功能开发中</h2>
+                <p class="coming-soon-desc">
+                    写作和翻译提交后，AI 自动评分、逐句点评，给出改进建议和参考范文。
+                    敬请期待！
+                </p>
+                <div class="coming-soon-features">
+                    <div class="feature-item">📝 智能评分</div>
+                    <div class="feature-item">💡 逐句点评</div>
+                    <div class="feature-item">📊 改进建议</div>
+                    <div class="feature-item">📄 参考范文</div>
+                </div>
+                <button class="back-btn" onclick="location.href='index.html'">← 返回首页</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const glowLayers = document.querySelectorAll('.glow-layer-1, .glow-layer-2');
+        const cursorGlow = document.querySelector('.cursor-glow');
+
+        document.addEventListener('mousemove', (e) => {
+            glowLayers.forEach(layer => {
+                layer.style.setProperty('--x', `${e.clientX}px`);
+                layer.style.setProperty('--y', `${e.clientY}px`);
+            });
+            cursorGlow.style.left = `${e.clientX}px`;
+            cursorGlow.style.top = `${e.clientY}px`;
+        });
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
+    </script>
+</body>
+</html>

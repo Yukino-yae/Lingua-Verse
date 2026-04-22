@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万语集 - 词库</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.08);
+            --navbar-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --card-hover-bg: rgba(255, 255, 255, 0.08);
+            --btn-bg: rgba(255, 255, 255, 0.1);
+            --btn-border: rgba(255, 255, 255, 0.2);
+            --btn-hover-bg: rgba(255, 255, 255, 0.2);
+            --glow-color: rgba(30, 150, 140, 0.12);
+            --glow-color-2: rgba(30, 150, 140, 0.08);
+            --cursor-glow: rgba(30, 150, 140, 1);
+            --progress-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d9e2ec 100%);
+            --text-color: #1a1a2e;
+            --text-secondary: rgba(26, 26, 46, 0.7);
+            --text-tertiary: rgba(26, 26, 46, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.8);
+            --navbar-border: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --card-hover-bg: rgba(255, 255, 255, 0.95);
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-border: rgba(0, 0, 0, 0.1);
+            --btn-hover-bg: rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(30, 150, 140, 0.1);
+            --glow-color-2: rgba(30, 150, 140, 0.06);
+            --cursor-glow: rgba(30, 150, 140, 0.8);
+            --progress-bg: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.3s ease;
+        }
+
+        .glow-layer-1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(
+                circle 600px at var(--x, 50%) var(--y, 50%),
+                var(--glow-color),
+                transparent 50%
+            );
+        }
+
+        .glow-layer-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(
+                circle 300px at var(--x, 50%) var(--y, 50%),
+                var(--glow-color-2),
+                transparent 40%
+            );
+        }
+
+        .cursor-glow {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, var(--cursor-glow), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        body:hover .cursor-glow {
+            opacity: 1;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--navbar-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--navbar-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-link {
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-link:hover {
+            color: #40e0d0;
+        }
+
+        .nav-link.active {
+            color: #40e0d0;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #40e0d0, #2eb8a8);
+            border-radius: 2px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .notification-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: var(--btn-bg);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        .theme-btn {
+            padding: 10px 16px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .theme-icon {
+            font-size: 18px;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding-top: 90px;
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .page-title span {
+            color: #40e0d0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--card-hover-bg);
+            box-shadow: none;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: var(--card-hover-bg);
+            transform: translateY(-3px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue {
+            background: rgba(64, 224, 208, 0.2);
+        }
+
+        .stat-icon.orange {
+            background: rgba(255, 150, 130, 0.2);
+        }
+
+        .stat-icon.purple {
+            background: rgba(147, 112, 219, 0.2);
+        }
+
+        .stat-icon.green {
+            background: rgba(50, 205, 50, 0.2);
+        }
+
+        .stat-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 3px;
+        }
+
+        .content-section {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title-icon {
+            font-size: 24px;
+        }
+
+        .view-all {
+            color: #40e0d0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        .vocab-category {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .category-icon.english {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+        }
+
+        .category-icon.japanese {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+        }
+
+        .category-icon.korean {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+        }
+
+        .category-icon.french {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .category-icon.german {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .category-icon.spanish {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+        }
+
+        .category-icon.italian {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .category-icon.russian {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+        }
+
+        .category-icon.chinese {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-left: auto;
+        }
+
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .vocab-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vocab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: radial-gradient(
+                400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(64, 224, 208, 0.4),
+                transparent 40%
+            );
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vocab-card:hover::before {
+            opacity: 1;
+        }
+
+        .vocab-card:hover {
+            background: var(--card-hover-bg);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .vocab-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .vocab-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(64, 224, 208, 0.15);
+        }
+
+        .vocab-card-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .vocab-card-badge.system {
+            background: rgba(64, 224, 208, 0.2);
+            color: #40e0d0;
+        }
+
+        .vocab-card-badge.user {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .vocab-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .vocab-card-desc {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .vocab-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .vocab-card-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .vocab-card-count strong {
+            color: #40e0d0;
+            font-size: 16px;
+        }
+
+        .vocab-card-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #40e0d0;
+            font-size: 13px;
+        }
+
+        .user-vocab-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .user-vocab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .user-vocab-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #40e0d0;
+            background: rgba(64, 224, 208, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .import-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .import-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-upload-area {
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .modal-upload-area:hover {
+            border-color: #40e0d0;
+            background: rgba(64, 224, 208, 0.05);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            color: #fff;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .modal-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--btn-bg);
+        }
+
+        .vocab-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vocab-detail-modal.active {
+            display: flex;
+        }
+
+        .vocab-detail-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .vocab-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .vocab-detail-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: rgba(64, 224, 208, 0.15);
+        }
+
+        .vocab-detail-info h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .vocab-detail-info p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .vocab-detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .vocab-detail-stat {
+            background: var(--btn-bg);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .vocab-detail-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #40e0d0;
+        }
+
+        .vocab-detail-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 5px;
+        }
+
+        .vocab-detail-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--btn-bg);
+            border-radius: 12px;
+        }
+
+        .vocab-detail-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .vocab-detail-btn {
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vocab-detail-btn.primary {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            color: #fff;
+        }
+
+        .vocab-detail-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .vocab-detail-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .vocab-detail-btn.secondary:hover {
+            background: var(--btn-bg);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .navbar-center {
+                display: none;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .vocab-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-layer-1"></div>
+    <div class="glow-layer-2"></div>
+    <div class="cursor-glow"></div>
+
+    <nav class="navbar">
+        <div class="navbar-logo" onclick="location.href='index.html'">万语集</div>
+        
+        <div class="navbar-center">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="learning.html" class="nav-link">语言学习</a>
+            <a href="vocabulary.html" class="nav-link active">词库</a>
+        </div>
+
+        <div class="navbar-right">
+            <button class="notification-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+                <span class="notification-badge"></span>
+            </button>
+            
+            <div class="user-info" onclick="location.href='profile.html'">
+                <div class="user-avatar">U</div>
+                <span class="user-name" id="navUserName">用户昵称</span>
+            </div>
+            
+            <button class="theme-btn" onclick="toggleTheme()">
+                <span class="theme-icon" id="themeIcon">🌙</span>
+            </button>
+            
+            <button class="theme-btn" onclick="openSkinModal()">
+                <span>换肤</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title"><span>词库</span>中心</h1>
+                <div class="header-actions">
+                    <button class="action-btn secondary" onclick="openImportModal()">
+                        <span>📤</span>
+                        <span>导入词库</span>
+                    </button>
+                    <button class="action-btn" onclick="createCustomVocab()">
+                        <span>✨</span>
+                        <span>创建词库</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📚</div>
+                    <div class="stat-info">
+                        <h3 id="totalVocabs">12</h3>
+                        <p>词库总数</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📖</div>
+                    <div class="stat-info">
+                        <h3 id="totalWords">8,500+</h3>
+                        <p>词汇总量</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👤</div>
+                    <div class="stat-info">
+                        <h3 id="userVocabs">0</h3>
+                        <p>我的词库</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-info">
+                        <h3 id="learnedWords">0</h3>
+                        <p>已学习</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterVocabs('all')">全部词库</button>
+                <button class="filter-tab" onclick="filterVocabs('system')">系统词库</button>
+                <button class="filter-tab" onclick="filterVocabs('user')">我的词库</button>
+                <button class="filter-tab" onclick="filterVocabs('recent')">最近使用</button>
+            </div>
+
+            <div class="vocab-category" id="englishCategory">
+                <div class="category-header">
+                    <div class="category-icon english">🇬🇧</div>
+                    <span class="category-title">英语</span>
+                    <span class="category-count">4 个词库</span>
+                </div>
+                <div class="vocab-grid">
+                    <div class="vocab-card" onclick="openVocabDetail('cet4')" data-type="system" data-language="english">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">📝</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">英语四级词库</h3>
+                        <p class="vocab-card-desc">大学英语四级考试核心词汇，涵盖听力、阅读、写作必备词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>2,500</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('cet6')" data-type="system" data-language="english">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">📚</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">英语六级词库</h3>
+                        <p class="vocab-card-desc">大学英语六级考试核心词汇，进阶词汇提升阅读与写作能力</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>3,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('kaoyan')" data-type="system" data-language="english">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🎓</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">考研英语词库</h3>
+                        <p class="vocab-card-desc">研究生入学考试英语词汇，包含高频词汇与长难句核心词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>5,500</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('ielts')" data-type="system" data-language="english">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🌍</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">雅思托福词库</h3>
+                        <p class="vocab-card-desc">雅思、托福考试核心词汇，覆盖听说读写全方位词汇需求</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>4,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vocab-category" id="japaneseCategory">
+                <div class="category-header">
+                    <div class="category-icon japanese">🇯🇵</div>
+                    <span class="category-title">日语</span>
+                    <span class="category-count">5 个词库</span>
+                </div>
+                <div class="vocab-grid">
+                    <div class="vocab-card" onclick="openVocabDetail('n5')" data-type="system" data-language="japanese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🌸</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">日语N5词库</h3>
+                        <p class="vocab-card-desc">日语能力测试N5级别基础词汇，适合日语入门学习者</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>800</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('n4')" data-type="system" data-language="japanese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🎌</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">日语N4词库</h3>
+                        <p class="vocab-card-desc">日语能力测试N4级别词汇，基础日常会话词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>1,500</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('n3')" data-type="system" data-language="japanese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🏯</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">日语N3词库</h3>
+                        <p class="vocab-card-desc">日语能力测试N3级别词汇，中级水平日常交流词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>3,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('n2')" data-type="system" data-language="japanese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🗻</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">日语N2词库</h3>
+                        <p class="vocab-card-desc">日语能力测试N2级别词汇，中高级商务与日常词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>5,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('n1')" data-type="system" data-language="japanese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">⛩️</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">日语N1词库</h3>
+                        <p class="vocab-card-desc">日语能力测试N1级别词汇，高级词汇与专业术语</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>10,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vocab-category" id="otherLanguagesCategory">
+                <div class="category-header">
+                    <div class="category-icon korean">🌐</div>
+                    <span class="category-title">其他语言</span>
+                    <span class="category-count">6 个词库</span>
+                </div>
+                <div class="vocab-grid">
+                    <div class="vocab-card" onclick="openVocabDetail('korean-basic')" data-type="system" data-language="korean">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇰🇷</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">韩语日常用语</h3>
+                        <p class="vocab-card-desc">韩语日常生活基本用语，涵盖问候、购物、出行等场景</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>1,000</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('french-basic')" data-type="system" data-language="french">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇫🇷</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">法语日常用语</h3>
+                        <p class="vocab-card-desc">法语日常生活基本用语，浪漫语言入门必备</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>800</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('german-basic')" data-type="system" data-language="german">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇩🇪</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">德语日常用语</h3>
+                        <p class="vocab-card-desc">德语日常生活基本用语，商务与旅游实用词汇</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>800</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('spanish-basic')" data-type="system" data-language="spanish">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇪🇸</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">西班牙语日常用语</h3>
+                        <p class="vocab-card-desc">西班牙语日常生活基本用语，世界第三大语言入门</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>800</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('italian-basic')" data-type="system" data-language="italian">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇮🇹</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">意大利语日常用语</h3>
+                        <p class="vocab-card-desc">意大利语日常生活基本用语，艺术与美食之国语言</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>600</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('russian-basic')" data-type="system" data-language="russian">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🇷🇺</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">俄语日常用语</h3>
+                        <p class="vocab-card-desc">俄语日常生活基本用语，探索斯拉夫语言魅力</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>600</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vocab-category" id="chineseCategory">
+                <div class="category-header">
+                    <div class="category-icon chinese">📜</div>
+                    <span class="category-title">文言文</span>
+                    <span class="category-count">2 个词库</span>
+                </div>
+                <div class="vocab-grid">
+                    <div class="vocab-card" onclick="openVocabDetail('wenyan-basic')" data-type="system" data-language="chinese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🎋</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">文言文基础词库</h3>
+                        <p class="vocab-card-desc">九年义务教育文言文核心词汇，涵盖实词虚词与通假字</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>500</strong> 词汇</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+
+                    <div class="vocab-card" onclick="openVocabDetail('poetry')" data-type="system" data-language="chinese">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">🎨</div>
+                            <span class="vocab-card-badge system">系统</span>
+                        </div>
+                        <h3 class="vocab-card-title">古诗鉴赏词库</h3>
+                        <p class="vocab-card-desc">经典古诗词鉴赏词汇，包含意象、典故与修辞手法解析</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count"><strong>300</strong> 词条</span>
+                            <span class="vocab-card-action">开始学习 →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-vocab-section" id="userVocabSection">
+                <div class="user-vocab-header">
+                    <h2 class="user-vocab-title">
+                        <span>📁</span>
+                        我的词库
+                    </h2>
+                </div>
+                <div class="vocab-grid" id="userVocabGrid">
+                    <div class="vocab-card" onclick="openImportModal()" style="border-style: dashed;">
+                        <div class="vocab-card-header">
+                            <div class="vocab-card-icon">➕</div>
+                        </div>
+                        <h3 class="vocab-card-title">导入新词库</h3>
+                        <p class="vocab-card-desc">支持 .txt、.csv、.json 格式，导入后可自定义词库名称</p>
+                        <div class="vocab-card-meta">
+                            <span class="vocab-card-count">点击上传</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="import-modal" id="importModal">
+        <div class="modal-content">
+            <h2 class="modal-title">导入词库</h2>
+            <div class="modal-upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">点击或拖拽文件到此处</div>
+                <div class="upload-hint">支持 .txt, .csv, .json 格式</div>
+            </div>
+            <input type="file" id="fileInput" accept=".txt,.csv,.json" style="display: none" onchange="handleFileSelect(event)">
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeImportModal()">取消</button>
+                <button class="modal-btn primary" onclick="confirmImport()">确认导入</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="vocab-detail-modal" id="vocabDetailModal">
+        <div class="vocab-detail-content">
+            <div class="vocab-detail-header">
+                <div class="vocab-detail-icon" id="detailIcon">📝</div>
+                <div class="vocab-detail-info">
+                    <h2 id="detailTitle">词库名称</h2>
+                    <p id="detailSubtitle">词库描述</p>
+                </div>
+            </div>
+            <div class="vocab-detail-stats">
+                <div class="vocab-detail-stat">
+                    <div class="vocab-detail-stat-value" id="detailTotal">0</div>
+                    <div class="vocab-detail-stat-label">总词汇</div>
+                </div>
+                <div class="vocab-detail-stat">
+                    <div class="vocab-detail-stat-value" id="detailLearned">0</div>
+                    <div class="vocab-detail-stat-label">已学习</div>
+                </div>
+                <div class="vocab-detail-stat">
+                    <div class="vocab-detail-stat-value" id="detailMastered">0</div>
+                    <div class="vocab-detail-stat-label">已掌握</div>
+                </div>
+            </div>
+            <div class="vocab-detail-desc" id="detailDesc">
+                词库详细描述信息
+            </div>
+            <div class="vocab-detail-actions">
+                <button class="vocab-detail-btn secondary" onclick="closeVocabDetail()">关闭</button>
+                <button class="vocab-detail-btn primary" onclick="startLearnVocab()">
+                    <span>📖</span>
+                    <span>开始学习</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const glowLayers = document.querySelectorAll('.glow-layer-1, .glow-layer-2');
+        const cursorGlow = document.querySelector('.cursor-glow');
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            glowLayers.forEach(layer => {
+                layer.style.setProperty('--x', `${x}px`);
+                layer.style.setProperty('--y', `${y}px`);
+            });
+
+            cursorGlow.style.left = `${x}px`;
+            cursorGlow.style.top = `${y}px`;
+        });
+
+        document.querySelectorAll('.vocab-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        let selectedFile = null;
+        let currentVocabId = null;
+
+        const vocabDatabase = {
+            'cet4': {
+                id: 'cet4',
+                title: '英语四级词库',
+                icon: '📝',
+                subtitle: '大学英语四级考试核心词汇',
+                desc: '本词库涵盖大学英语四级考试全部核心词汇，按照考试大纲编排，包含词汇、音标、释义、例句等完整信息。适合备考四级的同学系统学习使用。',
+                total: 2500,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'english'
+            },
+            'cet6': {
+                id: 'cet6',
+                title: '英语六级词库',
+                icon: '📚',
+                subtitle: '大学英语六级考试核心词汇',
+                desc: '本词库涵盖大学英语六级考试全部核心词汇，在四级基础上扩展进阶词汇，适合已通过四级考试的同学继续提升英语水平。',
+                total: 3000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'english'
+            },
+            'kaoyan': {
+                id: 'kaoyan',
+                title: '考研英语词库',
+                icon: '🎓',
+                subtitle: '研究生入学考试英语词汇',
+                desc: '本词库专为考研英语设计，包含考研英语大纲词汇、高频词汇、长难句核心词汇等，帮助考生系统备考研究生入学考试。',
+                total: 5500,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'english'
+            },
+            'ielts': {
+                id: 'ielts',
+                title: '雅思托福词库',
+                icon: '🌍',
+                subtitle: '雅思、托福考试核心词汇',
+                desc: '本词库涵盖雅思、托福考试核心词汇，按照听说读写分类整理，适合准备出国留学的同学系统学习使用。',
+                total: 4000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'english'
+            },
+            'n5': {
+                id: 'n5',
+                title: '日语N5词库',
+                icon: '🌸',
+                subtitle: '日语能力测试N5级别基础词汇',
+                desc: '日语能力测试N5级别词汇，适合日语入门学习者。包含基础词汇、假名、汉字、例句等完整信息。',
+                total: 800,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'japanese'
+            },
+            'n4': {
+                id: 'n4',
+                title: '日语N4词库',
+                icon: '🎌',
+                subtitle: '日语能力测试N4级别词汇',
+                desc: '日语能力测试N4级别词汇，适合已掌握N5基础的学习者。包含基础日常会话词汇、语法要点等。',
+                total: 1500,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'japanese'
+            },
+            'n3': {
+                id: 'n3',
+                title: '日语N3词库',
+                icon: '🏯',
+                subtitle: '日语能力测试N3级别词汇',
+                desc: '日语能力测试N3级别词汇，中级水平日常交流词汇。适合有一定日语基础的学习者。',
+                total: 3000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'japanese'
+            },
+            'n2': {
+                id: 'n2',
+                title: '日语N2词库',
+                icon: '🗻',
+                subtitle: '日语能力测试N2级别词汇',
+                desc: '日语能力测试N2级别词汇，中高级商务与日常词汇。适合准备在日本工作或深造的学习者。',
+                total: 5000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'japanese'
+            },
+            'n1': {
+                id: 'n1',
+                title: '日语N1词库',
+                icon: '⛩️',
+                subtitle: '日语能力测试N1级别词汇',
+                desc: '日语能力测试N1级别词汇，高级词汇与专业术语。适合追求日语精通的学习者。',
+                total: 10000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'japanese'
+            },
+            'korean-basic': {
+                id: 'korean-basic',
+                title: '韩语日常用语',
+                icon: '🇰🇷',
+                subtitle: '韩语日常生活基本用语',
+                desc: '韩语日常生活基本用语，涵盖问候、购物、出行、餐饮等常见场景，适合韩语入门学习者。',
+                total: 1000,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'korean'
+            },
+            'french-basic': {
+                id: 'french-basic',
+                title: '法语日常用语',
+                icon: '🇫🇷',
+                subtitle: '法语日常生活基本用语',
+                desc: '法语日常生活基本用语，浪漫语言入门必备。涵盖问候、购物、出行等常见场景。',
+                total: 800,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'french'
+            },
+            'german-basic': {
+                id: 'german-basic',
+                title: '德语日常用语',
+                icon: '🇩🇪',
+                subtitle: '德语日常生活基本用语',
+                desc: '德语日常生活基本用语，商务与旅游实用词汇。适合德语入门学习者。',
+                total: 800,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'german'
+            },
+            'spanish-basic': {
+                id: 'spanish-basic',
+                title: '西班牙语日常用语',
+                icon: '🇪🇸',
+                subtitle: '西班牙语日常生活基本用语',
+                desc: '西班牙语日常生活基本用语，世界第三大语言入门。涵盖问候、购物、出行等常见场景。',
+                total: 800,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'spanish'
+            },
+            'italian-basic': {
+                id: 'italian-basic',
+                title: '意大利语日常用语',
+                icon: '🇮🇹',
+                subtitle: '意大利语日常生活基本用语',
+                desc: '意大利语日常生活基本用语，艺术与美食之国语言入门。适合意大利语入门学习者。',
+                total: 600,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'italian'
+            },
+            'russian-basic': {
+                id: 'russian-basic',
+                title: '俄语日常用语',
+                icon: '🇷🇺',
+                subtitle: '俄语日常生活基本用语',
+                desc: '俄语日常生活基本用语，探索斯拉夫语言魅力。涵盖问候、购物、出行等常见场景。',
+                total: 600,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'russian'
+            },
+            'wenyan-basic': {
+                id: 'wenyan-basic',
+                title: '文言文基础词库',
+                icon: '🎋',
+                subtitle: '九年义务教育文言文核心词汇',
+                desc: '九年义务教育文言文核心词汇，涵盖实词、虚词、通假字、古今异义等知识点，适合中学生文言文学习。',
+                total: 500,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'chinese'
+            },
+            'poetry': {
+                id: 'poetry',
+                title: '古诗鉴赏词库',
+                icon: '🎨',
+                subtitle: '经典古诗词鉴赏词汇',
+                desc: '经典古诗词鉴赏词汇，包含意象、典故、修辞手法解析，帮助理解古诗词的艺术魅力。',
+                total: 300,
+                learned: 0,
+                mastered: 0,
+                type: 'system',
+                language: 'chinese'
+            }
+        };
+
+        let userVocabs = [];
+
+        function initializePage() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+
+            const savedUserVocabs = localStorage.getItem('userVocabs');
+            if (savedUserVocabs) {
+                userVocabs = JSON.parse(savedUserVocabs);
+                renderUserVocabs();
+            }
+
+            updateStats();
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function openSkinModal() {
+            alert('换肤功能即将上线，敬请期待！');
+        }
+
+        function filterVocabs(filter) {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const categories = document.querySelectorAll('.vocab-category');
+            const userSection = document.getElementById('userVocabSection');
+
+            if (filter === 'all') {
+                categories.forEach(cat => cat.style.display = 'block');
+                userSection.style.display = 'block';
+            } else if (filter === 'system') {
+                categories.forEach(cat => cat.style.display = 'block');
+                userSection.style.display = 'none';
+            } else if (filter === 'user') {
+                categories.forEach(cat => cat.style.display = 'none');
+                userSection.style.display = 'block';
+            } else if (filter === 'recent') {
+                categories.forEach(cat => cat.style.display = 'block');
+                userSection.style.display = 'block';
+            }
+        }
+
+        function openVocabDetail(vocabId) {
+            currentVocabId = vocabId;
+            const vocab = vocabDatabase[vocabId] || userVocabs.find(v => v.id === vocabId);
+            
+            if (!vocab) return;
+
+            document.getElementById('detailIcon').textContent = vocab.icon;
+            document.getElementById('detailTitle').textContent = vocab.title;
+            document.getElementById('detailSubtitle').textContent = vocab.subtitle;
+            document.getElementById('detailTotal').textContent = vocab.total;
+            document.getElementById('detailLearned').textContent = vocab.learned || 0;
+            document.getElementById('detailMastered').textContent = vocab.mastered || 0;
+            document.getElementById('detailDesc').textContent = vocab.desc;
+
+            document.getElementById('vocabDetailModal').classList.add('active');
+        }
+
+        function closeVocabDetail() {
+            document.getElementById('vocabDetailModal').classList.remove('active');
+            currentVocabId = null;
+        }
+
+        function startLearnVocab() {
+            if (currentVocabId) {
+                localStorage.setItem('currentVocab', currentVocabId);
+                window.location.href = 'learning.html?vocab=' + currentVocabId;
+            }
+        }
+
+        function openImportModal() {
+            document.getElementById('importModal').classList.add('active');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('active');
+            selectedFile = null;
+            const uploadArea = document.querySelector('.modal-upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">点击或拖拽文件到此处</div>
+                <div class="upload-hint">支持 .txt, .csv, .json 格式</div>
+            `;
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const uploadArea = document.querySelector('.modal-upload-area');
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">${file.name}</div>
+                    <div class="upload-hint">点击重新选择文件</div>
+                `;
+            }
+        }
+
+        function confirmImport() {
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let words = [];
+                        const content = e.target.result;
+
+                        if (selectedFile.name.endsWith('.json')) {
+                            words = JSON.parse(content);
+                        } else if (selectedFile.name.endsWith('.csv')) {
+                            const lines = content.split('\n');
+                            lines.forEach(line => {
+                                const parts = line.split(',');
+                                if (parts.length >= 2) {
+                                    words.push({
+                                        word: parts[0].trim(),
+                                        phonetic: parts[1] ? parts[1].trim() : '',
+                                        meaning: parts[2] ? parts[2].trim() : '',
+                                        example: parts[3] ? parts[3].trim() : ''
+                                    });
+                                }
+                            });
+                        } else {
+                            const lines = content.split('\n');
+                            lines.forEach(line => {
+                                const parts = line.split('|');
+                                if (parts.length >= 2) {
+                                    words.push({
+                                        word: parts[0].trim(),
+                                        phonetic: parts[1] ? parts[1].trim() : '',
+                                        meaning: parts[2] ? parts[2].trim() : '',
+                                        example: parts[3] ? parts[3].trim() : ''
+                                    });
+                                }
+                            });
+                        }
+
+                        if (words.length > 0) {
+                            const newVocab = {
+                                id: 'user-' + Date.now(),
+                                title: selectedFile.name.replace(/\.[^/.]+$/, ''),
+                                icon: '📁',
+                                subtitle: '用户导入词库',
+                                desc: `从文件 ${selectedFile.name} 导入，共 ${words.length} 个词汇`,
+                                total: words.length,
+                                learned: 0,
+                                mastered: 0,
+                                type: 'user',
+                                words: words,
+                                createdAt: Date.now()
+                            };
+
+                            userVocabs.push(newVocab);
+                            localStorage.setItem('userVocabs', JSON.stringify(userVocabs));
+                            vocabDatabase[newVocab.id] = newVocab;
+                            
+                            renderUserVocabs();
+                            updateStats();
+                            alert(`成功导入 ${words.length} 个词汇！`);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('文件解析失败，请检查文件格式！');
+                    }
+                };
+                reader.readAsText(selectedFile);
+            }
+            closeImportModal();
+        }
+
+        function renderUserVocabs() {
+            const grid = document.getElementById('userVocabGrid');
+            const addCard = grid.querySelector('.vocab-card[style*="dashed"]');
+            
+            const existingUserCards = grid.querySelectorAll('.vocab-card:not([style*="dashed"])');
+            existingUserCards.forEach(card => card.remove());
+
+            userVocabs.forEach(vocab => {
+                const card = document.createElement('div');
+                card.className = 'vocab-card';
+                card.onclick = () => openVocabDetail(vocab.id);
+                card.innerHTML = `
+                    <div class="vocab-card-header">
+                        <div class="vocab-card-icon">${vocab.icon}</div>
+                        <span class="vocab-card-badge user">我的</span>
+                    </div>
+                    <h3 class="vocab-card-title">${vocab.title}</h3>
+                    <p class="vocab-card-desc">${vocab.desc}</p>
+                    <div class="vocab-card-meta">
+                        <span class="vocab-card-count"><strong>${vocab.total}</strong> 词汇</span>
+                        <span class="vocab-card-action">开始学习 →</span>
+                    </div>
+                `;
+                grid.insertBefore(card, addCard);
+            });
+        }
+
+        function createCustomVocab() {
+            const name = prompt('请输入词库名称：');
+            if (name && name.trim()) {
+                const newVocab = {
+                    id: 'user-' + Date.now(),
+                    title: name.trim(),
+                    icon: '📝',
+                    subtitle: '用户自定义词库',
+                    desc: '用户创建的空白词库，可通过导入功能添加词汇',
+                    total: 0,
+                    learned: 0,
+                    mastered: 0,
+                    type: 'user',
+                    words: [],
+                    createdAt: Date.now()
+                };
+
+                userVocabs.push(newVocab);
+                localStorage.setItem('userVocabs', JSON.stringify(userVocabs));
+                vocabDatabase[newVocab.id] = newVocab;
+                
+                renderUserVocabs();
+                updateStats();
+                alert('词库创建成功！您可以导入词汇或手动添加。');
+            }
+        }
+
+        function updateStats() {
+            const systemCount = Object.keys(vocabDatabase).filter(k => vocabDatabase[k].type === 'system').length;
+            const userCount = userVocabs.length;
+            
+            document.getElementById('totalVocabs').textContent = systemCount + userCount;
+            document.getElementById('userVocabs').textContent = userCount;
+        }
+
+        initializePage();
+    </script>
+</body>
+</html>

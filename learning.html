@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万语集 - 语言学习</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --text-color: #fff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.08);
+            --navbar-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --card-hover-bg: rgba(255, 255, 255, 0.08);
+            --btn-bg: rgba(255, 255, 255, 0.1);
+            --btn-border: rgba(255, 255, 255, 0.2);
+            --btn-hover-bg: rgba(255, 255, 255, 0.2);
+            --glow-color: rgba(30, 150, 140, 0.12);
+            --glow-color-2: rgba(30, 150, 140, 0.08);
+            --cursor-glow: rgba(30, 150, 140, 1);
+            --progress-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 50%, #d9e2ec 100%);
+            --text-color: #1a1a2e;
+            --text-secondary: rgba(26, 26, 46, 0.7);
+            --text-tertiary: rgba(26, 26, 46, 0.5);
+            --navbar-bg: rgba(255, 255, 255, 0.8);
+            --navbar-border: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --card-hover-bg: rgba(255, 255, 255, 0.95);
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-border: rgba(0, 0, 0, 0.1);
+            --btn-hover-bg: rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(30, 150, 140, 0.1);
+            --glow-color-2: rgba(30, 150, 140, 0.06);
+            --cursor-glow: rgba(30, 150, 140, 0.8);
+            --progress-bg: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.3s ease;
+        }
+
+        .glow-layer-1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(
+                circle 600px at var(--x, 50%) var(--y, 50%),
+                var(--glow-color),
+                transparent 50%
+            );
+        }
+
+        .glow-layer-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(
+                circle 300px at var(--x, 50%) var(--y, 50%),
+                var(--glow-color-2),
+                transparent 40%
+            );
+        }
+
+        .cursor-glow {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, var(--cursor-glow), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        body:hover .cursor-glow {
+            opacity: 1;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--navbar-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--navbar-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-link {
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-link:hover {
+            color: #40e0d0;
+        }
+
+        .nav-link.active {
+            color: #40e0d0;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #40e0d0, #2eb8a8);
+            border-radius: 2px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .notification-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: var(--btn-bg);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        .theme-btn {
+            padding: 10px 16px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .theme-icon {
+            font-size: 18px;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding-top: 90px;
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .page-title span {
+            color: #40e0d0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--card-hover-bg);
+            box-shadow: none;
+        }
+
+        .action-btn.review {
+            background: linear-gradient(135deg, #ff9682, #ffb6a3);
+        }
+
+        .action-btn.review:hover {
+            box-shadow: 0 8px 25px rgba(255, 150, 130, 0.3);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .stats-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-mini-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: var(--btn-bg);
+            border-radius: 10px;
+        }
+
+        .stat-mini-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #40e0d0;
+        }
+
+        .stat-mini-value.review {
+            color: #ff9682;
+        }
+
+        .stat-mini-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 5px;
+        }
+
+        .word-list-filter {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-btn:hover {
+            background: var(--btn-bg);
+        }
+
+        .filter-btn.active {
+            background: rgba(64, 224, 208, 0.15);
+            border-color: rgba(64, 224, 208, 0.3);
+            color: #40e0d0;
+        }
+
+        .filter-btn .badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .filter-btn.active .badge {
+            background: rgba(64, 224, 208, 0.3);
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .learning-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .learning-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 1px;
+            background: radial-gradient(
+                400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(64, 224, 208, 0.4),
+                transparent 40%
+            );
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .learning-card:hover::before {
+            opacity: 1;
+        }
+
+        .learning-mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .mode-tab {
+            padding: 10px 24px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-tab:hover {
+            background: var(--btn-hover-bg);
+        }
+
+        .mode-tab.active {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .word-display {
+            text-align: center;
+            width: 100%;
+        }
+
+        .word-main {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .word-main.hidden-word {
+            color: transparent;
+            background: var(--btn-bg);
+            border-radius: 10px;
+            padding: 5px 20px;
+            user-select: none;
+        }
+
+        .word-phonetic {
+            font-size: 20px;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+        }
+
+        .word-meaning {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .word-example {
+            font-size: 16px;
+            color: var(--text-tertiary);
+            font-style: italic;
+            max-width: 500px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .audio-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .audio-btn.playing {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .spelling-section {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .spelling-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 24px;
+            text-align: center;
+            background: var(--btn-bg);
+            border: 2px solid var(--btn-border);
+            border-radius: 12px;
+            color: var(--text-color);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .spelling-input:focus {
+            border-color: #40e0d0;
+            box-shadow: 0 0 20px rgba(64, 224, 208, 0.2);
+        }
+
+        .spelling-input.correct {
+            border-color: #40e0d0;
+            background: rgba(64, 224, 208, 0.1);
+        }
+
+        .spelling-input.wrong {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .spelling-hint {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .speaking-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .speak-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speak-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .speak-btn.recording {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            animation: recording 1s infinite;
+        }
+
+        @keyframes recording {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+        }
+
+        .speaking-result {
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: var(--btn-bg);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .speaking-result.show {
+            display: block;
+        }
+
+        .learning-controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn.wrong {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        .control-btn.wrong:hover {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(1.1);
+        }
+
+        .control-btn.correct {
+            background: rgba(64, 224, 208, 0.2);
+            color: #40e0d0;
+        }
+
+        .control-btn.correct:hover {
+            background: rgba(64, 224, 208, 0.3);
+            transform: scale(1.1);
+        }
+
+        .control-btn.next {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            color: #fff;
+        }
+
+        .control-btn.next:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .review-info {
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: rgba(255, 150, 130, 0.1);
+            border: 1px solid rgba(255, 150, 130, 0.3);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .review-info.show {
+            display: block;
+        }
+
+        .progress-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .progress-count {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--progress-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #40e0d0, #2eb8a8);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .word-list-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .word-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .word-list-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .word-list-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 10px;
+        }
+
+        .word-list-search input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-color);
+            font-size: 14px;
+            width: 150px;
+        }
+
+        .word-list-search input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .word-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .word-table th {
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .word-table td {
+            padding: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .word-table tr:hover {
+            background: var(--btn-bg);
+        }
+
+        .word-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .word-status.mastered {
+            background: rgba(64, 224, 208, 0.2);
+            color: #40e0d0;
+        }
+
+        .word-status.learning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .word-status.new {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-tertiary);
+        }
+
+        .word-status.review {
+            background: rgba(255, 150, 130, 0.2);
+            color: #ff9682;
+        }
+
+        .listen-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            transition: transform 0.2s ease;
+        }
+
+        .listen-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .import-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .import-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #40e0d0;
+            background: rgba(64, 224, 208, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #40e0d0, #2eb8a8);
+            border: none;
+            color: #fff;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+        }
+
+        .modal-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--btn-bg);
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-card {
+                flex: 1;
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .navbar-center {
+                display: none;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .learning-card {
+                padding: 30px 20px;
+            }
+
+            .word-main {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-layer-1"></div>
+    <div class="glow-layer-2"></div>
+    <div class="cursor-glow"></div>
+
+    <nav class="navbar">
+        <div class="navbar-logo" onclick="location.href='index.html'">万语集</div>
+        
+        <div class="navbar-center">
+            <a href="index.html" class="nav-link">首页</a>
+            <a href="learning.html" class="nav-link active">语言学习</a>
+            <a href="vocabulary.html" class="nav-link">词库</a>
+        </div>
+
+        <div class="navbar-right">
+            <button class="notification-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+                <span class="notification-badge"></span>
+            </button>
+            
+            <div class="user-info" onclick="location.href='profile.html'">
+                <div class="user-avatar">U</div>
+                <span class="user-name" id="navUserName">用户昵称</span>
+            </div>
+            
+            <button class="theme-btn" onclick="toggleTheme()">
+                <span class="theme-icon" id="themeIcon">🌙</span>
+            </button>
+            
+            <button class="theme-btn" onclick="openSkinModal()">
+                <span>换肤</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title"><span id="languageTitle">英语</span>学习</h1>
+                <div class="header-actions">
+                    <button class="action-btn secondary" onclick="openImportModal()">
+                        <span>📁</span>
+                        <span>导入词库</span>
+                    </button>
+                    <button class="action-btn review" onclick="startReview()" id="reviewBtn">
+                        <span>🔄</span>
+                        <span>复习 (<span id="reviewCount">0</span>)</span>
+                    </button>
+                    <button class="action-btn" onclick="startQuickLearn()">
+                        <span>⚡</span>
+                        <span>快速学习</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="sidebar">
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">学习统计</h3>
+                        <div class="stats-mini">
+                            <div class="stat-mini-item">
+                                <div class="stat-mini-value" id="totalWords">128</div>
+                                <div class="stat-mini-label">总词汇</div>
+                            </div>
+                            <div class="stat-mini-item">
+                                <div class="stat-mini-value" id="masteredWords">45</div>
+                                <div class="stat-mini-label">已掌握</div>
+                            </div>
+                            <div class="stat-mini-item">
+                                <div class="stat-mini-value" id="learningWords">38</div>
+                                <div class="stat-mini-label">学习中</div>
+                            </div>
+                            <div class="stat-mini-item">
+                                <div class="stat-mini-value review" id="reviewWords">0</div>
+                                <div class="stat-mini-label">待复习</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-title">词汇筛选</h3>
+                        <div class="word-list-filter">
+                            <button class="filter-btn active" onclick="filterWords('all')">
+                                <span>全部词汇</span>
+                                <span class="badge" id="filterAll">0</span>
+                            </button>
+                            <button class="filter-btn" onclick="filterWords('new')">
+                                <span>待学习</span>
+                                <span class="badge" id="filterNew">0</span>
+                            </button>
+                            <button class="filter-btn" onclick="filterWords('learning')">
+                                <span>学习中</span>
+                                <span class="badge" id="filterLearning">0</span>
+                            </button>
+                            <button class="filter-btn" onclick="filterWords('mastered')">
+                                <span>已掌握</span>
+                                <span class="badge" id="filterMastered">0</span>
+                            </button>
+                            <button class="filter-btn" onclick="filterWords('review')">
+                                <span>待复习</span>
+                                <span class="badge" id="filterReview">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-panel">
+                    <div class="learning-card" id="learningCard">
+                        <div class="learning-mode-tabs">
+                            <button class="mode-tab active" onclick="switchMode('read')" id="modeRead">📖 读</button>
+                            <button class="mode-tab" onclick="switchMode('listen')" id="modeListen">🎧 听</button>
+                            <button class="mode-tab" onclick="switchMode('speak')" id="modeSpeak">🎤 说</button>
+                            <button class="mode-tab" onclick="switchMode('write')" id="modeWrite">✍️ 写</button>
+                        </div>
+
+                        <div class="word-display" id="wordDisplay">
+                            <div class="word-main" id="wordMain">
+                                <span id="wordText">hello</span>
+                                <button class="audio-btn" onclick="playAudio()" id="audioBtn" title="播放发音">🔊</button>
+                            </div>
+                            <div class="word-phonetic" id="wordPhonetic">/həˈləʊ/</div>
+                            <div class="word-meaning" id="wordMeaning">你好；喂</div>
+                            <div class="word-example" id="wordExample">"Hello, how are you today?" - 你好，今天怎么样？</div>
+                        </div>
+
+                        <div class="spelling-section" id="spellingSection" style="display: none;">
+                            <input type="text" class="spelling-input" id="spellingInput" placeholder="请输入单词拼写" onkeyup="checkSpelling(event)">
+                            <div class="spelling-hint" id="spellingHint"></div>
+                        </div>
+
+                        <div class="speaking-section" id="speakingSection" style="display: none;">
+                            <button class="speak-btn" onclick="startRecording()" id="speakBtn">
+                                <span>🎤</span>
+                                <span>开始录音</span>
+                            </button>
+                            <div class="speaking-result" id="speakingResult">
+                                <div>识别结果：<span id="recognizedText"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-info" id="reviewInfo">
+                            📅 复习提醒：根据艾宾浩斯记忆曲线，该词汇已到复习时间
+                        </div>
+
+                        <div class="learning-controls">
+                            <button class="control-btn wrong" onclick="markWord('wrong')" title="不认识">✗</button>
+                            <button class="control-btn correct" onclick="markWord('correct')" title="认识">✓</button>
+                            <button class="control-btn next" onclick="nextWord()" title="下一个">→</button>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="progress-title">今日学习进度</span>
+                            <span class="progress-count"><span id="currentProgress">15</span> / <span id="totalProgress">50</span></span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progressBar" style="width: 30%"></div>
+                        </div>
+                    </div>
+
+                    <div class="word-list-section">
+                        <div class="word-list-header">
+                            <h3 class="word-list-title">词汇列表</h3>
+                            <div class="word-list-search">
+                                <span>🔍</span>
+                                <input type="text" placeholder="搜索单词..." id="searchInput" oninput="searchWords()">
+                            </div>
+                        </div>
+                        <table class="word-table">
+                            <thead>
+                                <tr>
+                                    <th>单词</th>
+                                    <th>音标</th>
+                                    <th>释义</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wordTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="import-modal" id="importModal">
+        <div class="modal-content">
+            <h2 class="modal-title">导入词库</h2>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">点击或拖拽文件到此处</div>
+                <div class="upload-hint">支持 .txt, .csv, .json 格式</div>
+            </div>
+            <input type="file" id="fileInput" accept=".txt,.csv,.json" style="display: none" onchange="handleFileSelect(event)">
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeImportModal()">取消</button>
+                <button class="modal-btn primary" onclick="confirmImport()">确认导入</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const glowLayers = document.querySelectorAll('.glow-layer-1, .glow-layer-2');
+        const cursorGlow = document.querySelector('.cursor-glow');
+        const learningCard = document.getElementById('learningCard');
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            glowLayers.forEach(layer => {
+                layer.style.setProperty('--x', `${x}px`);
+                layer.style.setProperty('--y', `${y}px`);
+            });
+
+            cursorGlow.style.left = `${x}px`;
+            cursorGlow.style.top = `${y}px`;
+        });
+
+        learningCard.addEventListener('mousemove', (e) => {
+            const rect = learningCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            learningCard.style.setProperty('--mouse-x', `${x}px`);
+            learningCard.style.setProperty('--mouse-y', `${y}px`);
+        });
+
+        const EBBINGHAUS_INTERVALS = [
+            20 * 60 * 1000,
+            1 * 60 * 60 * 1000,
+            24 * 60 * 60 * 1000,
+            2 * 24 * 60 * 60 * 1000,
+            4 * 24 * 60 * 60 * 1000,
+            7 * 24 * 60 * 60 * 1000,
+            15 * 24 * 60 * 60 * 1000
+        ];
+
+        const languageVoiceMap = {
+            '英语': 'en-US',
+            '日语': 'ja-JP',
+            '韩语': 'ko-KR',
+            '法语': 'fr-FR',
+            '德语': 'de-DE',
+            '西班牙语': 'es-ES',
+            '意大利语': 'it-IT',
+            '俄语': 'ru-RU',
+            '文言文': 'zh-CN'
+        };
+
+        const wordDatabase = {
+            '英语': [
+                { word: 'hello', phonetic: '/həˈləʊ/', meaning: '你好；喂', example: '"Hello, how are you today?" - 你好，今天怎么样？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'world', phonetic: '/wɜːld/', meaning: '世界；地球', example: '"The world is beautiful." - 世界是美丽的。', status: 'mastered', lastReview: Date.now() - 3 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 4 * 24 * 60 * 60 * 1000, reviewStage: 4 },
+                { word: 'learn', phonetic: '/lɜːn/', meaning: '学习；学会', example: '"I want to learn English." - 我想学英语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'language', phonetic: '/ˈlæŋɡwɪdʒ/', meaning: '语言', example: '"Language is a bridge." - 语言是一座桥梁。', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'study', phonetic: '/ˈstʌdi/', meaning: '学习；研究', example: '"Study hard and make progress." - 努力学习，天天向上。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'book', phonetic: '/bʊk/', meaning: '书；书籍', example: '"This is a good book." - 这是一本好书。', status: 'mastered', lastReview: Date.now() - 8 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 7 * 24 * 60 * 60 * 1000, reviewStage: 5 },
+                { word: 'knowledge', phonetic: '/ˈnɒlɪdʒ/', meaning: '知识；学问', example: '"Knowledge is power." - 知识就是力量。', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'practice', phonetic: '/ˈpræktɪs/', meaning: '练习；实践', example: '"Practice makes perfect." - 熟能生巧。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '日语': [
+                { word: 'こんにちは', phonetic: 'konnichiwa', meaning: '你好', example: '「こんにちは、元気ですか？」- 你好，你好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'ありがとう', phonetic: 'arigatou', meaning: '谢谢', example: '「ありがとうございます。」- 非常感谢。', status: 'mastered', lastReview: Date.now() - 2 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 2 * 24 * 60 * 60 * 1000, reviewStage: 3 },
+                { word: '勉強', phonetic: 'benkyou', meaning: '学习', example: '「日本語を勉強しています。」- 我正在学习日语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: '言葉', phonetic: 'kotoba', meaning: '语言；话语', example: '「言葉は心の鏡。」- 语言是心灵的镜子。', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '韩语': [
+                { word: '안녕하세요', phonetic: 'annyeonghaseyo', meaning: '你好', example: '「안녕하세요, 만나서 반갑습니다.」- 你好，很高兴认识你。', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: '감사합니다', phonetic: 'gamsahamnida', meaning: '谢谢', example: '「감사합니다.」- 谢谢。', status: 'mastered', lastReview: Date.now() - 5 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 2 * 24 * 60 * 60 * 1000, reviewStage: 4 },
+                { word: '공부', phonetic: 'gongbu', meaning: '学习', example: '「한국어를 공부하고 있어요.」- 我正在学习韩语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '法语': [
+                { word: 'bonjour', phonetic: '/bɔ̃ʒuʁ/', meaning: '你好；早上好', example: '« Bonjour, comment allez-vous? » - 你好，您好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'merci', phonetic: '/mɛʁsi/', meaning: '谢谢', example: '« Merci beaucoup. » - 非常感谢。', status: 'mastered', lastReview: Date.now() - 1 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 1 * 24 * 60 * 60 * 1000, reviewStage: 2 },
+                { word: 'apprendre', phonetic: '/apʁɑ̃dʁ/', meaning: '学习', example: '« J\'apprends le français. » - 我在学习法语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '德语': [
+                { word: 'Guten Tag', phonetic: '/ˈɡuːtn̩ taːk/', meaning: '你好', example: '« Guten Tag, wie geht es Ihnen? » - 你好，您好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'danke', phonetic: '/ˈdaŋkə/', meaning: '谢谢', example: '« Danke schön. » - 非常感谢。', status: 'mastered', lastReview: Date.now() - 2 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 2 * 24 * 60 * 60 * 1000, reviewStage: 3 },
+                { word: 'lernen', phonetic: '/ˈlɛʁnən/', meaning: '学习', example: '« Ich lerne Deutsch. » - 我在学习德语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '西班牙语': [
+                { word: 'hola', phonetic: '/ˈola/', meaning: '你好', example: '« ¡Hola! ¿Cómo estás? » - 你好！你好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'gracias', phonetic: '/ˈɡɾaθjas/', meaning: '谢谢', example: '« Muchas gracias. » - 非常感谢。', status: 'mastered', lastReview: Date.now() - 4 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 3 * 24 * 60 * 60 * 1000, reviewStage: 4 },
+                { word: 'aprender', phonetic: '/apɾenˈdeɾ/', meaning: '学习', example: '« Estoy aprendiendo español. » - 我正在学习西班牙语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '意大利语': [
+                { word: 'ciao', phonetic: '/tʃao/', meaning: '你好；再见', example: '« Ciao, come stai? » - 你好，你好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'grazie', phonetic: '/ˈɡrattsje/', meaning: '谢谢', example: '« Grazie mille. » - 非常感谢。', status: 'mastered', lastReview: Date.now() - 3 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 4 * 24 * 60 * 60 * 1000, reviewStage: 4 },
+                { word: 'imparare', phonetic: '/impaˈrare/', meaning: '学习', example: '« Sto imparando l\'italiano. » - 我正在学习意大利语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '俄语': [
+                { word: 'привет', phonetic: 'privet', meaning: '你好', example: '« Привет, как дела? » - 你好，你好吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: 'спасибо', phonetic: 'spasibo', meaning: '谢谢', example: '« Большое спасибо. » - 非常感谢。', status: 'mastered', lastReview: Date.now() - 6 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 1 * 24 * 60 * 60 * 1000, reviewStage: 5 },
+                { word: 'учить', phonetic: 'uchit\'', meaning: '学习', example: '« Я учу русский язык. » - 我在学习俄语。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 }
+            ],
+            '文言文': [
+                { word: '之', phonetic: 'zhī', meaning: '的；他/她/它', example: '「学而时习之，不亦说乎？」- 学习并且按时温习它，不也是很快乐吗？', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: '乎', phonetic: 'hū', meaning: '吗；呢', example: '「此非曹孟德之诗乎？」- 这不是曹孟德的诗吗？', status: 'mastered', lastReview: Date.now() - 2 * 24 * 60 * 60 * 1000, nextReview: Date.now() + 5 * 24 * 60 * 60 * 1000, reviewStage: 3 },
+                { word: '者', phonetic: 'zhě', meaning: '……的人', example: '「知之者不如好之者。」- 懂得它的人不如喜爱它的人。', status: 'new', lastReview: null, nextReview: null, reviewStage: 0 },
+                { word: '也', phonetic: 'yě', meaning: '句末语气词', example: '「师者，所以传道受业解惑也。」- 老师，是用来传授道理、教授学业、解答疑难问题的人。', status: 'learning', lastReview: null, nextReview: null, reviewStage: 0 }
+            ]
+        };
+
+        let currentLanguage = '英语';
+        let currentWordIndex = 0;
+        let currentWords = [];
+        let currentFilter = 'all';
+        let selectedFile = null;
+        let currentMode = 'read';
+        let isReviewMode = false;
+        let recognition = null;
+
+        function initializePage() {
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+            if (savedLanguage && wordDatabase[savedLanguage]) {
+                currentLanguage = savedLanguage;
+            }
+            
+            document.getElementById('languageTitle').textContent = currentLanguage;
+            loadWords();
+            updateStats();
+            renderWordTable();
+
+            const savedUserName = localStorage.getItem('userName');
+            if (savedUserName) {
+                document.getElementById('navUserName').textContent = savedUserName;
+            }
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+
+            initSpeechRecognition();
+        }
+
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onresult = function(event) {
+                    const result = event.results[0][0].transcript;
+                    document.getElementById('recognizedText').textContent = result;
+                    document.getElementById('speakingResult').classList.add('show');
+                    
+                    const currentWord = currentWords[currentWordIndex];
+                    if (currentWord && result.toLowerCase().includes(currentWord.word.toLowerCase())) {
+                        document.getElementById('recognizedText').innerHTML = `<span style="color: #40e0d0">${result} ✓</span>`;
+                    } else {
+                        document.getElementById('recognizedText').innerHTML = `<span style="color: #ff6b6b">${result} ✗</span>`;
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    alert('语音识别出错，请检查麦克风权限');
+                };
+                
+                recognition.onend = function() {
+                    const speakBtn = document.getElementById('speakBtn');
+                    speakBtn.classList.remove('recording');
+                    speakBtn.innerHTML = '<span>🎤</span><span>开始录音</span>';
+                };
+            }
+        }
+
+        function loadWords() {
+            currentWords = wordDatabase[currentLanguage] || [];
+            currentWordIndex = 0;
+            displayCurrentWord();
+        }
+
+        function displayCurrentWord() {
+            if (currentWords.length === 0) {
+                document.getElementById('wordText').textContent = '暂无词汇';
+                document.getElementById('wordPhonetic').textContent = '';
+                document.getElementById('wordMeaning').textContent = '请导入词库开始学习';
+                document.getElementById('wordExample').textContent = '';
+                return;
+            }
+
+            const word = currentWords[currentWordIndex];
+            
+            if (currentMode === 'listen') {
+                document.getElementById('wordText').textContent = '???';
+                document.getElementById('wordPhonetic').textContent = '点击播放按钮听发音';
+            } else if (currentMode === 'write') {
+                document.getElementById('wordText').textContent = '???';
+                document.getElementById('wordPhonetic').textContent = word.phonetic;
+            } else {
+                document.getElementById('wordText').textContent = word.word;
+                document.getElementById('wordPhonetic').textContent = word.phonetic;
+            }
+            
+            document.getElementById('wordMeaning').textContent = word.meaning;
+            document.getElementById('wordExample').textContent = word.example;
+
+            const reviewInfo = document.getElementById('reviewInfo');
+            if (word.status === 'mastered' && word.nextReview && word.nextReview <= Date.now()) {
+                reviewInfo.classList.add('show');
+            } else {
+                reviewInfo.classList.remove('show');
+            }
+        }
+
+        function playAudio() {
+            const word = currentWords[currentWordIndex];
+            if (!word) return;
+
+            const audioBtn = document.getElementById('audioBtn');
+            audioBtn.classList.add('playing');
+
+            const utterance = new SpeechSynthesisUtterance(word.word);
+            utterance.lang = languageVoiceMap[currentLanguage] || 'en-US';
+            utterance.rate = 0.8;
+            
+            utterance.onend = function() {
+                audioBtn.classList.remove('playing');
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            document.querySelectorAll('.mode-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+
+            document.getElementById('spellingSection').style.display = mode === 'write' ? 'block' : 'none';
+            document.getElementById('speakingSection').style.display = mode === 'speak' ? 'block' : 'none';
+            document.getElementById('speakingResult').classList.remove('show');
+
+            if (mode === 'write') {
+                document.getElementById('spellingInput').value = '';
+                document.getElementById('spellingInput').className = 'spelling-input';
+                document.getElementById('spellingHint').textContent = '';
+            }
+
+            displayCurrentWord();
+        }
+
+        function checkSpelling(event) {
+            const input = event.target;
+            const currentWord = currentWords[currentWordIndex];
+            
+            if (event.key === 'Enter') {
+                if (input.value.toLowerCase() === currentWord.word.toLowerCase()) {
+                    input.className = 'spelling-input correct';
+                    document.getElementById('spellingHint').textContent = '✓ 正确！';
+                    document.getElementById('spellingHint').style.color = '#40e0d0';
+                } else {
+                    input.className = 'spelling-input wrong';
+                    document.getElementById('spellingHint').textContent = `✗ 正确答案：${currentWord.word}`;
+                    document.getElementById('spellingHint').style.color = '#ff6b6b';
+                }
+            }
+        }
+
+        function startRecording() {
+            if (!recognition) {
+                alert('您的浏览器不支持语音识别功能');
+                return;
+            }
+
+            const speakBtn = document.getElementById('speakBtn');
+            
+            if (speakBtn.classList.contains('recording')) {
+                recognition.stop();
+                return;
+            }
+
+            recognition.lang = languageVoiceMap[currentLanguage] || 'en-US';
+            speakBtn.classList.add('recording');
+            speakBtn.innerHTML = '<span>⏹️</span><span>停止录音</span>';
+            document.getElementById('speakingResult').classList.remove('show');
+            
+            recognition.start();
+        }
+
+        function nextWord() {
+            if (currentWords.length === 0) return;
+            currentWordIndex = (currentWordIndex + 1) % currentWords.length;
+            displayCurrentWord();
+            
+            if (currentMode === 'write') {
+                document.getElementById('spellingInput').value = '';
+                document.getElementById('spellingInput').className = 'spelling-input';
+                document.getElementById('spellingHint').textContent = '';
+            }
+        }
+
+        function markWord(status) {
+            if (currentWords.length === 0) return;
+            
+            const word = currentWords[currentWordIndex];
+            const now = Date.now();
+            
+            if (status === 'correct') {
+                if (word.status === 'new') {
+                    word.status = 'learning';
+                    word.lastReview = now;
+                    word.reviewStage = 0;
+                    word.nextReview = now + EBBINGHAUS_INTERVALS[0];
+                } else if (word.status === 'learning' || word.status === 'mastered') {
+                    word.status = 'mastered';
+                    word.lastReview = now;
+                    word.reviewStage = Math.min(word.reviewStage + 1, EBBINGHAUS_INTERVALS.length - 1);
+                    word.nextReview = now + EBBINGHAUS_INTERVALS[word.reviewStage];
+                }
+            } else {
+                word.status = 'learning';
+                word.lastReview = now;
+                word.reviewStage = 0;
+                word.nextReview = now + EBBINGHAUS_INTERVALS[0];
+            }
+            
+            updateStats();
+            renderWordTable();
+            nextWord();
+        }
+
+        function getReviewWords() {
+            const words = wordDatabase[currentLanguage] || [];
+            return words.filter(w => w.status === 'mastered' && w.nextReview && w.nextReview <= Date.now());
+        }
+
+        function startReview() {
+            const reviewWords = getReviewWords();
+            if (reviewWords.length === 0) {
+                alert('暂无需要复习的词汇！');
+                return;
+            }
+            
+            isReviewMode = true;
+            currentWords = reviewWords;
+            currentWordIndex = 0;
+            displayCurrentWord();
+            document.getElementById('reviewInfo').classList.add('show');
+        }
+
+        function updateStats() {
+            const words = wordDatabase[currentLanguage] || [];
+            const mastered = words.filter(w => w.status === 'mastered').length;
+            const learning = words.filter(w => w.status === 'learning').length;
+            const newWords = words.filter(w => w.status === 'new').length;
+            const reviewWords = getReviewWords().length;
+
+            document.getElementById('totalWords').textContent = words.length;
+            document.getElementById('masteredWords').textContent = mastered;
+            document.getElementById('learningWords').textContent = learning;
+            document.getElementById('reviewWords').textContent = reviewWords;
+            document.getElementById('reviewCount').textContent = reviewWords;
+
+            document.getElementById('filterAll').textContent = words.length;
+            document.getElementById('filterNew').textContent = newWords;
+            document.getElementById('filterLearning').textContent = learning;
+            document.getElementById('filterMastered').textContent = mastered;
+            document.getElementById('filterReview').textContent = reviewWords;
+
+            const progress = words.length > 0 ? Math.round((mastered / words.length) * 100) : 0;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('currentProgress').textContent = mastered;
+            document.getElementById('totalProgress').textContent = words.length;
+        }
+
+        function filterWords(filter) {
+            currentFilter = filter;
+            isReviewMode = false;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.filter-btn').classList.add('active');
+
+            let words = wordDatabase[currentLanguage] || [];
+
+            if (filter === 'review') {
+                words = getReviewWords();
+            } else if (filter !== 'all') {
+                words = words.filter(w => w.status === filter);
+            }
+
+            currentWords = words;
+            currentWordIndex = 0;
+            displayCurrentWord();
+            renderWordTable();
+        }
+
+        function renderWordTable() {
+            const tbody = document.getElementById('wordTableBody');
+            let words = wordDatabase[currentLanguage] || [];
+
+            if (currentFilter === 'review') {
+                words = getReviewWords();
+            } else if (currentFilter !== 'all') {
+                words = words.filter(w => w.status === currentFilter);
+            }
+
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            if (searchText) {
+                words = words.filter(w => 
+                    w.word.toLowerCase().includes(searchText) || 
+                    w.meaning.toLowerCase().includes(searchText)
+                );
+            }
+
+            tbody.innerHTML = words.map(word => `
+                <tr>
+                    <td>${word.word}</td>
+                    <td>${word.phonetic}</td>
+                    <td>${word.meaning}</td>
+                    <td><span class="word-status ${word.status}">${getStatusText(word.status)}</span></td>
+                    <td><button class="listen-btn" onclick="speakWord('${word.word}')">🔊</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function speakWord(word) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = languageVoiceMap[currentLanguage] || 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'mastered': '已掌握',
+                'learning': '学习中',
+                'new': '待学习'
+            };
+            return statusMap[status] || status;
+        }
+
+        function searchWords() {
+            renderWordTable();
+        }
+
+        function openImportModal() {
+            document.getElementById('importModal').classList.add('active');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('active');
+            selectedFile = null;
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">点击或拖拽文件到此处</div>
+                <div class="upload-hint">支持 .txt, .csv, .json 格式</div>
+            `;
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const uploadArea = document.querySelector('.upload-area');
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">${file.name}</div>
+                    <div class="upload-hint">点击重新选择文件</div>
+                `;
+            }
+        }
+
+        function confirmImport() {
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let newWords = [];
+                        const content = e.target.result;
+
+                        if (selectedFile.name.endsWith('.json')) {
+                            newWords = JSON.parse(content);
+                        } else if (selectedFile.name.endsWith('.csv')) {
+                            const lines = content.split('\n');
+                            lines.forEach(line => {
+                                const parts = line.split(',');
+                                if (parts.length >= 2) {
+                                    newWords.push({
+                                        word: parts[0].trim(),
+                                        phonetic: parts[1] ? parts[1].trim() : '',
+                                        meaning: parts[2] ? parts[2].trim() : '',
+                                        example: parts[3] ? parts[3].trim() : '',
+                                        status: 'new',
+                                        lastReview: null,
+                                        nextReview: null,
+                                        reviewStage: 0
+                                    });
+                                }
+                            });
+                        } else {
+                            const lines = content.split('\n');
+                            lines.forEach(line => {
+                                const parts = line.split('|');
+                                if (parts.length >= 2) {
+                                    newWords.push({
+                                        word: parts[0].trim(),
+                                        phonetic: parts[1] ? parts[1].trim() : '',
+                                        meaning: parts[2] ? parts[2].trim() : '',
+                                        example: parts[3] ? parts[3].trim() : '',
+                                        status: 'new',
+                                        lastReview: null,
+                                        nextReview: null,
+                                        reviewStage: 0
+                                    });
+                                }
+                            });
+                        }
+
+                        newWords = newWords.map(w => ({
+                            ...w,
+                            status: w.status || 'new',
+                            lastReview: w.lastReview || null,
+                            nextReview: w.nextReview || null,
+                            reviewStage: w.reviewStage || 0
+                        }));
+
+                        if (newWords.length > 0) {
+                            wordDatabase[currentLanguage] = [...(wordDatabase[currentLanguage] || []), ...newWords];
+                            loadWords();
+                            updateStats();
+                            renderWordTable();
+                            alert(`成功导入 ${newWords.length} 个词汇！`);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('文件解析失败，请检查文件格式！');
+                    }
+                };
+                reader.readAsText(selectedFile);
+            }
+            closeImportModal();
+        }
+
+        function startQuickLearn() {
+            isReviewMode = false;
+            const newWords = (wordDatabase[currentLanguage] || []).filter(w => w.status === 'new');
+            if (newWords.length === 0) {
+                alert('没有待学习的词汇了！');
+                return;
+            }
+            currentWords = newWords;
+            currentWordIndex = 0;
+            displayCurrentWord();
+            document.getElementById('reviewInfo').classList.remove('show');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function openSkinModal() {
+            alert('换肤功能即将上线，敬请期待！');
+        }
+
+        initializePage();
+    </script>
+</body>
+</html>

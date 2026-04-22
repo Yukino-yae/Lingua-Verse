@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标跟随发光效果示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a0a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glow-layer-1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(
+                circle 800px at var(--x, 50%) var(--y, 50%),
+                rgba(100, 80, 255, 0.12),
+                transparent 60%
+            );
+        }
+
+        .glow-layer-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            background: radial-gradient(
+                circle 400px at var(--x, 50%) var(--y, 50%),
+                rgba(255, 180, 100, 0.08),
+                transparent 50%
+            );
+        }
+
+        .glow-layer-3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            background: radial-gradient(
+                circle 200px at var(--x, 50%) var(--y, 50%),
+                rgba(255, 255, 255, 0.05),
+                transparent 40%
+            );
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 80px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: radial-gradient(
+                400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(255, 255, 255, 0.4),
+                transparent 40%
+            );
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(100, 80, 255, 0.3), rgba(255, 180, 100, 0.3));
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 50px;
+        }
+
+        .demo-section h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .glow-button {
+            position: relative;
+            padding: 16px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: transparent;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #6450ff, #ffb464);
+            border-radius: 50px;
+            z-index: -2;
+        }
+
+        .glow-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(255, 255, 255, 0.3),
+                transparent 50%
+            );
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glow-button:hover::after {
+            opacity: 1;
+        }
+
+        .glow-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(100, 80, 255, 0.3);
+        }
+
+        .glow-button.secondary::before {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glow-button.secondary:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .spotlight-area {
+            position: relative;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 50px;
+        }
+
+        .spotlight-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(
+                circle 150px at var(--x, 50%) var(--y, 50%),
+                rgba(100, 80, 255, 0.3),
+                transparent 60%
+            );
+            pointer-events: none;
+        }
+
+        .spotlight-text {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            z-index: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-layer-1"></div>
+    <div class="glow-layer-2"></div>
+    <div class="glow-layer-3"></div>
+
+    <div class="content">
+        <header>
+            <h1>鼠标跟随发光效果</h1>
+            <p class="subtitle">移动鼠标体验多层发光效果，悬停卡片查看边框发光，这是一个综合性的 CSS + JavaScript 实现示例</p>
+        </header>
+
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-icon">✨</div>
+                <h3>多层背景发光</h3>
+                <p>使用多层 radial-gradient 叠加，创造丰富的光晕效果。每层使用不同的颜色和半径。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>卡片边框发光</h3>
+                <p>通过 CSS mask 和 radial-gradient 组合，实现元素边框跟随鼠标发光的效果。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>高性能实现</h3>
+                <p>使用 CSS 变量动态更新位置，避免频繁操作 DOM，保证流畅的动画效果。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔧</div>
+                <h3>纯 CSS + JS</h3>
+                <p>无需任何第三方库，使用原生技术实现，代码简洁易懂，方便集成到任何项目。</p>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>按钮发光效果</h2>
+            <div class="button-group">
+                <button class="glow-button">主要按钮</button>
+                <button class="glow-button secondary">次要按钮</button>
+            </div>
+            
+            <div class="spotlight-area">
+                <p class="spotlight-text">移动鼠标到这里<br>查看聚光灯效果</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>核心技术：CSS radial-gradient + CSS Variables + JavaScript mousemove</p>
+        </footer>
+    </div>
+
+    <script>
+        const glowLayers = document.querySelectorAll('.glow-layer-1, .glow-layer-2, .glow-layer-3');
+        const cards = document.querySelectorAll('.card');
+        const buttons = document.querySelectorAll('.glow-button');
+        const spotlightArea = document.querySelector('.spotlight-area');
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            glowLayers.forEach(layer => {
+                layer.style.setProperty('--x', `${x}px`);
+                layer.style.setProperty('--y', `${y}px`);
+            });
+        });
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        buttons.forEach(button => {
+            button.addEventListener('mousemove', (e) => {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                button.style.setProperty('--mouse-x', `${x}px`);
+                button.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        spotlightArea.addEventListener('mousemove', (e) => {
+            const rect = spotlightArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            spotlightArea.style.setProperty('--x', `${x}px`);
+            spotlightArea.style.setProperty('--y', `${y}px`);
+        });
+    </script>
+</body>
+</html>
